@@ -5,6 +5,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"io"
 	"log"
+	"net/http"
 )
 
 func main() {
@@ -17,6 +18,38 @@ func main() {
 	router := gin.Default()
 	router.GET("/ping", func(c *gin.Context) {
 		c.String(200, "pong")
+	})
+	router.POST("/client/upload", func(c *gin.Context) {
+		reader, err := c.Request.MultipartReader()
+		hashsum := ""
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+		for true {
+			part, err := reader.NextPart()
+			if err == io.EOF {
+				break
+			} else if err != nil {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
+			switch part.FormName() {
+			case "payload":
+				hashsum, err = app.Store.AddFile(part)
+				break
+			default:
+				log.Println("ignoring unknown part: ",
+					part.FormName())
+			}
+		}
+
+		if hashsum != "" {
+			c.JSON(http.StatusOK, hashsum)
+		} else {
+			c.JSON(http.StatusBadRequest, "file part missing")
+		}
+
 	})
 	repo := router.Group("/client/repo")
 	{
