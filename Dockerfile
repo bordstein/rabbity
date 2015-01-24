@@ -15,6 +15,7 @@ ENV PATH /go/bin:$PATH
 # install go dependencies
 RUN go get github.com/gin-gonic/gin
 RUN go get gopkg.in/mgo.v2
+RUN go get github.com/tonnerre/golang-go.crypto/sha3
 
 # run supervisor with supplied config per default
 ADD deployment/supervisord.conf /etc/supervisor/supervisord.conf
