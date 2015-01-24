@@ -37,6 +37,11 @@ func main() {
 			switch part.FormName() {
 			case "payload":
 				hashsum, err = app.Store.AddFile(part)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError,
+						err.Error())
+					return
+				}
 				break
 			default:
 				log.Println("ignoring unknown part: ",
