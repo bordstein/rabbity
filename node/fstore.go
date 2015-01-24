@@ -13,22 +13,22 @@ type FStore struct {
 	TmpPath string
 }
 
-func (store FStore) AddFile(r io.Reader) error {
+func (store FStore) AddFile(r io.Reader) (string, error) {
 	file, err := ioutil.TempFile(store.TmpPath, "rabbity-tmp")
 	if err != nil {
-		return err
+		return "", err
 	}
 	written, hashsum, err := Sha3HashCopy(file, r)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if err := file.Close(); err != nil {
-		return err
+		return "", err
 	}
 	log.Printf("Wrote %v bytes to %v (hashsum is %v)", written, file.Name(), hashsum)
 	log.Printf("Moving %v to %v", file.Name(), store.getHashPath(hashsum))
 	err = os.Rename(file.Name(), store.getHashPath(hashsum))
-	return nil
+	return hashsum, nil
 }
 
 func (store FStore) getHashPath(hashsum string) string {
