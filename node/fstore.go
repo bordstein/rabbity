@@ -13,7 +13,7 @@ type FStore struct {
 	TmpPath string
 }
 
-func (store FStore) AddFile(r io.Reader) (string, error) {
+func (store *FStore) AddFile(r io.Reader) (string, error) {
 	file, err := ioutil.TempFile(store.TmpPath, "rabbity-tmp")
 	if err != nil {
 		return "", err
@@ -31,7 +31,7 @@ func (store FStore) AddFile(r io.Reader) (string, error) {
 	return hashsum, nil
 }
 
-func (store FStore) getHashPath(hashsum string) string {
+func (store *FStore) getHashPath(hashsum string) string {
 	dirPath := filepath.Join(store.Path, string(hashsum[0]), string(hashsum[1]))
 	err := os.MkdirAll(dirPath, 0700)
 	if err != nil {
@@ -40,12 +40,12 @@ func (store FStore) getHashPath(hashsum string) string {
 	return filepath.Join(dirPath, hashsum[2:])
 }
 
-func (store FStore) getFilePath(hashsum string) string {
+func (store *FStore) getFilePath(hashsum string) string {
 	return filepath.Join(store.Path, string(hashsum[0]),
 		string(hashsum[1]), hashsum[2:])
 }
 
-func (store FStore) HasFile(hashsum string) bool {
+func (store *FStore) HasFile(hashsum string) bool {
 	filePath := store.getFilePath(hashsum)
 	if _, err := os.Stat(filePath); err == nil {
 		return true
@@ -53,6 +53,6 @@ func (store FStore) HasFile(hashsum string) bool {
 	return false
 }
 
-func (store FStore) GetFile(hashsum string) (io.Reader, error) {
+func (store *FStore) GetFile(hashsum string) (io.Reader, error) {
 	return os.Open(store.getFilePath(hashsum))
 }
