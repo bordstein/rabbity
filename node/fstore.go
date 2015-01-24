@@ -15,6 +15,7 @@ type FStore struct {
 
 func (store *FStore) AddFile(r io.Reader) (string, error) {
 	file, err := ioutil.TempFile(store.TmpPath, "rabbity-tmp")
+	log.Printf("uploading to temporary file %v", file.Name())
 	if err != nil {
 		return "", err
 	}

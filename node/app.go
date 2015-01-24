@@ -1,7 +1,10 @@
 package main
 
 import (
+	"flag"
 	"gopkg.in/mgo.v2"
+	"log"
+	"path/filepath"
 )
 
 type App struct {
@@ -11,7 +14,14 @@ type App struct {
 }
 
 func NewApp() App {
-	store := FStore{Path: "/tmp/test", TmpPath: "/tmp/test/tmp"}
+	dataDir := flag.String("datadir", "/tmp/rabbity-store",
+		"The directory to store the binary files")
+	flag.Parse()
+	store := FStore{
+		Path:    *dataDir,
+		TmpPath: filepath.Join(*dataDir, "tmp"),
+	}
+	log.Printf("using datastore in %v", store.Path)
 	return App{Store: store}
 }
 
