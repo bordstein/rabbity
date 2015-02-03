@@ -15,3 +15,7 @@ type RepoVersion struct {
 type FileInfo struct {
 	Name string
 }
+
+type NodeInitMsg struct {
+	Host string `json:"host" binding:"required"`
+}

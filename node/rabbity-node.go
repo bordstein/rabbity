@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"gopkg.in/mgo.v2/bson"
 	"io"
 	"log"
@@ -101,6 +102,20 @@ func main() {
 			} else {
 				io.Copy(c.Writer, file)
 			}
+		})
+		cluster.POST("/init", func(c *gin.Context) {
+			initMsg := NodeInitMsg{}
+			ok := c.BindWith(&initMsg, binding.JSON)
+			if !ok {
+				c.String(500, "could not parse body")
+				return
+			}
+			err := initiateCluster(initMsg.Host)
+			if err != nil {
+				c.String(500, err.Error())
+				return
+			}
+			c.String(200, "ok")
 		})
 	}
 
