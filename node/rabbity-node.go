@@ -103,7 +103,10 @@ func main() {
 				io.Copy(c.Writer, file)
 			}
 		})
-		cluster.POST("/init", func(c *gin.Context) {
+	}
+	admin := router.Group("/admin")
+	{
+		admin.POST("/init", func(c *gin.Context) {
 			initMsg := NodeInitMsg{}
 			ok := c.BindWith(&initMsg, binding.JSON)
 			if !ok {
