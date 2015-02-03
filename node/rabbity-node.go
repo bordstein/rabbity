@@ -10,9 +10,6 @@ import (
 
 func main() {
 	app := NewApp()
-	if err := app.ConnectDatabase(); err != nil {
-		panic(err)
-	}
 	defer app.DisconnectDatabase()
 
 	router := gin.Default()
@@ -62,7 +59,13 @@ func main() {
 			repoName := c.Params.ByName("name")
 			//TODO validate param
 			newRepo := Repo{repoName, 0}
-			err := app.DB.C("repos").Insert(&newRepo)
+			repoCol, err := app.GetRepoCol()
+			if err != nil {
+				c.String(500, err.Error())
+				return
+			}
+
+			err = repoCol.Insert(&newRepo)
 			if err != nil {
 				log.Println(err)
 				c.String(500, "nok")
@@ -72,7 +75,12 @@ func main() {
 		})
 		repo.GET("/", func(c *gin.Context) {
 			result := []Repo{}
-			err := app.DB.C("repos").Find(bson.M{}).All(&result)
+			repoCol, err := app.GetRepoCol()
+			if err != nil {
+				c.String(500, err.Error())
+				return
+			}
+			err = repoCol.Find(bson.M{}).All(&result)
 			if err != nil {
 				log.Println(err)
 				c.String(500, "nok")

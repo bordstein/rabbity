@@ -38,11 +38,24 @@ func (app *App) ConnectDatabase() error {
 		Sparse: true,
 	}
 	if err := app.DB.C("repos").EnsureIndex(index); err != nil {
+		app.DisconnectDatabase()
 		return err
 	}
 	return nil
 }
 
+func (app *App) GetRepoCol() (*mgo.Collection, error) {
+	if err := app.ConnectDatabase(); err != nil {
+		app.DisconnectDatabase()
+		return nil, err
+	}
+	return app.DB.C("repos"), nil
+}
+
 func (app *App) DisconnectDatabase() {
-	app.dbSession.Close()
+	if app.dbSession != nil {
+		app.dbSession.Close()
+	}
+	app.DB = nil
+	app.dbSession = nil
 }
