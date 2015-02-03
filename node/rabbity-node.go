@@ -120,6 +120,14 @@ func main() {
 			}
 			c.String(200, "ok")
 		})
+		admin.GET("/nodes", func(c *gin.Context) {
+			result, err := getNodeInfo()
+			if err != nil {
+				c.String(500, err.Error())
+				return
+			}
+			c.JSON(200, result)
+		})
 	}
 
 	router.Run(":8080")

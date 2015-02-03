@@ -31,3 +31,21 @@ func initiateCluster(host string) error {
 	err = dbSession.Run(bson.D{{"replSetInitiate", cfg}}, &result)
 	return err
 }
+
+func getNodeInfo() (interface{}, error) {
+	dbSession, err := mgo.DialWithInfo(
+		&mgo.DialInfo{
+			Addrs:    []string{"localhost"},
+			Direct:   true,
+			FailFast: true,
+			Database: "local",
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	var result []bson.M
+	err = dbSession.DB("local").C("system.replset").Find(bson.M{}).All(&result)
+	log.Println(result)
+	return result[0]["members"], err
+}
