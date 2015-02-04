@@ -7,11 +7,11 @@ import (
 )
 
 func initiateCluster(host string) error {
-	cfg := bson.D{
-		{"_id", "rs0"},
-		{"members", []bson.D{
-			bson.D{{"_id", 0}, {"host", host}},
-		}},
+	cfg := bson.M{
+		"_id": "rs0",
+		"members": []bson.M{
+			bson.M{"_id": 0, "host": host},
+		},
 	}
 
 	dbSession, err := mgo.DialWithInfo(
