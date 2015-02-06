@@ -10,7 +10,7 @@ func initiateCluster(host string) error {
 	cfg := bson.M{
 		"_id": "rs0",
 		"members": []bson.M{
-			bson.M{"_id": 0, "host": host},
+			bson.M{"_id": 0, "host": host, "tags": bson.M{"rabbity_port": "8080"}},
 		},
 	}
 
