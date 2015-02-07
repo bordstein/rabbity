@@ -1,5 +1,9 @@
 from debian:jessie
+
+# create volumes for mongodb and fstore data
 VOLUME ["/data"]
+VOLUME ["/data/db"]
+VOLUME ["/data/fstore"]
 
 # install needed services
 RUN apt-get update && \
