@@ -8,7 +8,14 @@ VOLUME ["/data/fstore"]
 # install needed services
 RUN apt-get update && \
 	apt-get upgrade -y -q && \
-	apt-get -q -y install golang git mongodb-server supervisor
+	apt-get -q -y install golang git supervisor bzr
+
+# Use official MongoDB builds from 10gen as they are more current
+RUN \
+  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && \
+  echo 'deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen' > /etc/apt/sources.list.d/mongodb.list && \
+  apt-get update && \
+  apt-get install -y mongodb-org
 
 # setup GOPATH
 ENV PATH /usr/src/go/bin:$PATH
